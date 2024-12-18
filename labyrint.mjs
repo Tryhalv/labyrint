@@ -55,6 +55,7 @@ const LEVEL_OBJECTS = [LOOT, EMPTY, NXT_LVL_DOOR];
 const MOBS_BASTARD = "B";
 const MOBS = [MOBS_BASTARD];
 const NPCs = [];
+const PLAYER_HP_DISPLAY = "❤️";
 const POSSIBLE_PICKUPS = [
   { name: "Sword", attribute: "attack", value: 5 },
   { name: "Spear", attribute: "attack", value: 3 },
@@ -258,8 +259,14 @@ function draw() {
 
 function renderHUD() {
   let hpBar = `[${
-    ANSI.COLOR.RED + pad(Math.round(playerStats.hp), "❤️") + ANSI.COLOR_RESET
-  }${ANSI.COLOR.BLUE + pad(HP_MAX - playerStats.hp, "❤️") + ANSI.COLOR_RESET}]`;
+    ANSI.COLOR.RED +
+    pad(Math.round(playerStats.hp), PLAYER_HP_DISPLAY) +
+    ANSI.COLOR_RESET
+  }${
+    ANSI.COLOR.BLUE +
+    pad(HP_MAX - playerStats.hp, PLAYER_HP_DISPLAY) +
+    ANSI.COLOR_RESET
+  }]`;
   let cash = `$:${playerStats.cash}`;
   return `${hpBar} ${cash} \n`;
 }
