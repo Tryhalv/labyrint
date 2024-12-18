@@ -73,6 +73,7 @@ const P_MOV_CELL_AMT = 1;
 const LOOT_CASH_DROP_RATE = 0.95;
 const LOOT_CASH_MIN_AMT = 3;
 const LOOT_CASH_MAX_AMT = 7;
+const LOOT_CASH_DISPLAY_NAME = "gold";
 const HP_MAX = 10;
 const MAX_ATTACK = 2;
 
@@ -139,9 +140,11 @@ function update() {
     if (currentItem == LOOT) {
       if (Math.random() < LOOT_CASH_DROP_RATE) {
         // 95% av tiden gir vi "cash" som loot
-        let loot = randomBetween(LOOT_CASH_MIN_AMT, LOOT_CASH_MAX_AMT);
+        let loot = Math.round(
+          randomBetween(LOOT_CASH_MIN_AMT, LOOT_CASH_MAX_AMT)
+        );
         playerStats.cash += loot;
-        eventText = playerGainsLoot(loot); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
+        eventText = playerGainsLoot(loot, LOOT_CASH_DISPLAY_NAME); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
       } else {
         // i 5% av tilfellen tildeler vi en tilfeldig gjenstand fra listen over gjenstander.
         let item = POSSIBLE_PICKUPS.random();
