@@ -37,13 +37,6 @@ for (let i = 0; i < tempLevel.length; i++) {
   let outputRow = row.split("");
   level.push(outputRow);
 }
-// Dette er farge palleten for de ulike symbolene, brukes når vi skriver dem ut.
-let pallet = {
-  "█": ANSI.COLOR.LIGHT_GRAY,
-  H: ANSI.COLOR.RED,
-  $: ANSI.COLOR.YELLOW,
-  B: ANSI.COLOR.GREEN,
-};
 
 let isDirty = true; // For å ungå at vi tegner på hver oppdatering (kan skape flimring) så bruker vi denne variabelen til å indikere at det skal tegnes på nytt,
 
@@ -55,10 +48,12 @@ let playerPos = {
 
 // Konstanter for ulike elementer av spillet.
 const EMPTY = " ";
+const WALL_BLOCK = "█";
 const HERO = "H";
 const LOOT = "$";
-const THINGS = [LOOT, EMPTY];
-const MOBS = ["B"];
+const LEVEL_OBJECTS = [LOOT, EMPTY];
+const MOBS_BASTARD = "B";
+const MOBS = [MOBS_BASTARD];
 const NPCs = [];
 const POSSIBLE_PICKUPS = [
   { name: "Sword", attribute: "attack", value: 5 },
@@ -76,6 +71,14 @@ const LOOT_CASH_MAX_AMT = 7;
 const LOOT_CASH_DISPLAY_NAME = "gold";
 const HP_MAX = 10;
 const MAX_ATTACK = 2;
+
+// Dette er farge palleten for de ulike symbolene, brukes når vi skriver dem ut.
+let pallet = {
+  [WALL_BLOCK]: ANSI.COLOR.LIGHT_GRAY,
+  [HERO]: ANSI.COLOR.RED,
+  [LOOT]: ANSI.COLOR.YELLOW,
+  [MOBS_BASTARD]: ANSI.COLOR.GREEN,
+};
 
 const playerStats = { hp: HP_MAX, cash: 0, attack: 1.1 };
 
@@ -133,7 +136,7 @@ function update() {
   let tRow = playerPos.row + P_MOV_CELL_AMT * drow;
   let tcol = playerPos.col + P_MOV_CELL_AMT * dcol;
 
-  if (THINGS.includes(level[tRow][tcol])) {
+  if (LEVEL_OBJECTS.includes(level[tRow][tcol])) {
     // Er det en gjenstand der spilleren prøver å gå?
 
     let currentItem = level[tRow][tcol];
