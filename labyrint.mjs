@@ -58,6 +58,8 @@ const POSSIBLE_PICKUPS = [
 
 const E_HP_INIT_MULTIPLIER = 6;
 const E_HP_INIT_MIN = 4;
+const E_DMG_INIT_MIN = 0.7;
+const P_MOV_CELL_AMT = 1;
 
 const HP_MAX = 10;
 const MAX_ATTACK = 2;
@@ -80,7 +82,7 @@ function update() {
         // For hver celle ([rad][kolone]) sjekker vi om det er noe for oss å håndtere.
 
         let value = level[row][col];
-        if (value == "H") {
+        if (value == HERO) {
           // Dersom verdien er H, da har vi funnet helten vår
           playerPos.row = row;
           playerPos.col = col;
@@ -89,7 +91,7 @@ function update() {
 
           let hp =
             Math.round(Math.random() * E_HP_INIT_MULTIPLIER) + E_HP_INIT_MIN;
-          let attack = 0.7 + Math.random();
+          let attack = E_DMG_INIT_MIN + Math.random();
           let badThing = { hp, attack, row, col };
           NPCs.push(badThing);
         }
@@ -98,25 +100,25 @@ function update() {
   }
 
   let drow = 0; // variabel for spillerens ønskede endring vertikalt
-  let dcol = 0; // varianel for spillerens ænskede endring horizontalt.
+  let dcol = 0; // varianel for spillerens ønskede endring horizontalt.
 
   // Nå sjekker vi om spilleren har prøvd å bevege seg vertikalt
   if (KeyBoardManager.isUpPressed()) {
-    drow = -1;
+    drow = -P_MOV_CELL_AMT;
   } else if (KeyBoardManager.isDownPressed()) {
-    drow = 1;
+    drow = P_MOV_CELL_AMT;
   }
   // Nå sjekker vi horisontalt
   if (KeyBoardManager.isLeftPressed()) {
-    dcol = -1;
+    dcol = -P_MOV_CELL_AMT;
   } else if (KeyBoardManager.isRightPressed()) {
-    dcol = 1;
+    dcol = P_MOV_CELL_AMT;
   }
 
   // Så bruker vi den ønskede endringen til å kalulere ny posisjon på kartet.
   // Merk at vi ikke flytter spilleren dit enda, for det er ikke sikkert det er mulig.
-  let tRow = playerPos.row + 1 * drow;
-  let tcol = playerPos.col + 1 * dcol;
+  let tRow = playerPos.row + P_MOV_CELL_AMT * drow;
+  let tcol = playerPos.col + P_MOV_CELL_AMT * dcol;
 
   if (THINGS.includes(level[tRow][tcol])) {
     // Er det en gjenstand der spilleren prøver å gå?
