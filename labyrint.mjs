@@ -12,6 +12,7 @@ import { level1 } from "./levels.mjs";
 import { level2 } from "./levels.mjs";
 import { splashScreen } from "./splashscreen.mjs";
 import dict from "./dictionary.mjs";
+import { randomBetween } from "./mathUtils";
 const FPS = 250; // 60 frames i sekundet sån sirkus..
 let rawLevel = level1;
 let startPrompt;
@@ -49,18 +50,21 @@ const EMPTY = " ";
 const HERO = "H";
 const LOOT = "$";
 const THINGS = [LOOT, EMPTY];
-const BAD_THINGS = ["B"];
+const MOBS = ["B"];
 const NPCs = [];
 const POSSIBLE_PICKUPS = [
   { name: "Sword", attribute: "attack", value: 5 },
   { name: "Spear", attribute: "attack", value: 3 },
+  { name: "Dagger", attribute: "attack", value: 3 },
 ];
 
 const E_HP_INIT_MULTIPLIER = 6;
 const E_HP_INIT_MIN = 4;
 const E_DMG_INIT_MIN = 0.7;
 const P_MOV_CELL_AMT = 1;
-
+const LOOT_CASH_DROP_RATE = 0.95;
+const LOOT_CASH_MIN_AMT = 3;
+const LOOT_CASH_MAX_AMT = 7;
 const HP_MAX = 10;
 const MAX_ATTACK = 2;
 
@@ -86,7 +90,7 @@ function update() {
           // Dersom verdien er H, da har vi funnet helten vår
           playerPos.row = row;
           playerPos.col = col;
-        } else if (BAD_THINGS.includes(value)) {
+        } else if (MOBS.includes(value)) {
           // Posisjonen inneholder en "fiende" da må vi gi fienden noen stats for senere bruk
 
           let hp =
@@ -125,9 +129,9 @@ function update() {
 
     let currentItem = level[tRow][tcol];
     if (currentItem == LOOT) {
-      if (Math.random() < 0.95) {
+      if (Math.random() < LOOT_CASH_DROP_RATE) {
         // 95% av tiden gir vi "cash" som loot
-        let loot = Number.randomBetween(3, 7);
+        let loot = randomBetween(LOOT_CASH_MIN_AMT, LOOT_CASH_MAX_AMT);
         playerStats.chash += loot;
         eventText = `Player gained ${loot}$`; // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
       } else {
@@ -147,7 +151,7 @@ function update() {
 
     // Sørger for at vi tegner den nye situasjonen.
     isDirty = true;
-  } else if (BAD_THINGS.includes(level[tRow][tcol])) {
+  } else if (MOBS.includes(level[tRow][tcol])) {
     // Spilleren har forsøkt å gå inn der hvor det står en "motstander" av en eller annen type
 
     // Vi må finne den riktige "motstanderen" i listen over motstandere.
@@ -207,7 +211,7 @@ function draw() {
     for (let col = 0; col < level[row].length; col++) {
       let symbol = level[row][col];
       if (pallet[symbol] != undefined) {
-        if (BAD_THINGS.includes(symbol)) {
+        if (MOBS.includes(symbol)) {
           // Kan endre tegning dersom vi vill.
           rowRendering += pallet[symbol] + symbol + ANSI.COLOR_RESET;
         } else {
