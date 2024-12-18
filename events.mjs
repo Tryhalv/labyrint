@@ -4,12 +4,12 @@ export function playerDealsDmg(attack) {
 export function playerGainsLoot(loot) {
   return `Player gained ${loot}`;
 }
-export function playerFoundItem(item) {
+export function playerFindsItem(item) {
   return `Player found ${item.name}, ${item.attribute} is changed by ${item.value}`;
 }
-export function MOBSDeath {
+export function bastardDies() {
   return " and the bastard dies";
 }
-export function MobsDealsDmg {
-    return `Bastard deals ${attack} back`
+export function mobsDealsDmg(attack) {
+  return `\nBastard deals ${attack} back`;
 }

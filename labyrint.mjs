@@ -1,9 +1,6 @@
 //#region
 import * as readlinePromises from "node:readline/promises";
-const rl = readlinePromises.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+
 //#endregion
 import ANSI from "./ANSI.mjs";
 import KeyBoardManager from "./keyboardManager.mjs";
@@ -12,15 +9,18 @@ import { level1 } from "./levels.mjs";
 import { level2 } from "./levels.mjs";
 import { splashScreen } from "./splashscreen.mjs";
 import dict from "./dictionary.mjs";
-import { randomBetween } from "./mathUtils";
+import { randomBetween } from "./mathUtils.mjs";
 import {
-  bastardDeath,
-  MobsDealsDmg,
-  MOBSDeath,
+  bastardDies,
+  mobsDealsDmg,
   playerDealsDmg,
-  playerFoundItem,
+  playerFindsItem,
   playerGainsLoot,
-} from "./events";
+} from "./events.mjs";
+const rl = readlinePromises.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 const FPS = 250; // 60 frames i sekundet sån sirkus..
 let rawLevel = level1;
 let startPrompt;
@@ -146,7 +146,7 @@ function update() {
         // i 5% av tilfellen tildeler vi en tilfeldig gjenstand fra listen over gjenstander.
         let item = POSSIBLE_PICKUPS.random();
         playerStats.attack += item.value;
-        eventText = playerFoundItem(item); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
+        eventText = playerFindsItem(item); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
       }
     }
 
@@ -179,13 +179,13 @@ function update() {
 
     if (antagonist.hp <= 0) {
       // Sjekker om motstanderen er død.
-      eventText += MOBSDeath; // Sier i fra at motstandren er død
+      eventText += bastardDies(); // Sier i fra at motstandren er død
       level[tRow][tcol] = EMPTY; // Markerer stedet på kartet hvor motstanderen sto som ledig.
     } else {
       // Dersom motstanderen ikke er død, så slår vedkommene tilbake.
       attack = (Math.random() * MAX_ATTACK * antagonist.attack).toFixed(2);
       playerStats.hp -= attack;
-      eventText += \n MobsDealsDmg;
+      eventText += mobsDealsDmg(attack);
     }
 
     // Setter temp pos tilbake siden dette har vært en kamp runde
