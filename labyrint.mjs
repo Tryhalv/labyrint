@@ -22,21 +22,20 @@ const rl = readlinePromises.createInterface({
   output: process.stdout,
 });
 const FPS = 250; // 60 frames i sekundet sån sirkus..
-let rawLevel = level1;
-let startPrompt;
 
+let level = loadLevel(level1);
 console.log(splashScreen);
 await rl.question(dict.gameSettings.start_Prompt);
 
 // Brettet som er lastet inn er i form av tekst, vi må omgjøre teksten til en
 // to dimensjonal liste [][] for å kunne tolke hva som er hvor etc.
-let tempLevel = rawLevel.split("\n");
-let level = [];
-for (let i = 0; i < tempLevel.length; i++) {
-  let row = tempLevel[i];
-  let outputRow = row.split("");
-  level.push(outputRow);
-}
+// let tempLevel = rawLevel.split("\n");
+// let level = [];
+// for (let i = 0; i < tempLevel.length; i++) {
+//   let row = tempLevel[i];
+//   let outputRow = row.split("");
+//   level.push(outputRow);
+// }
 
 let isDirty = true; // For å ungå at vi tegner på hver oppdatering (kan skape flimring) så bruker vi denne variabelen til å indikere at det skal tegnes på nytt,
 
@@ -49,9 +48,10 @@ let playerPos = {
 // Konstanter for ulike elementer av spillet.
 const EMPTY = " ";
 const WALL_BLOCK = "█";
+const NXT_LVL_DOOR = "▏";
 const HERO = "H";
 const LOOT = "$";
-const LEVEL_OBJECTS = [LOOT, EMPTY];
+const LEVEL_OBJECTS = [LOOT, EMPTY, NXT_LVL_DOOR];
 const MOBS_BASTARD = "B";
 const MOBS = [MOBS_BASTARD];
 const NPCs = [];
@@ -75,9 +75,10 @@ const MAX_ATTACK = 2;
 // Dette er farge palleten for de ulike symbolene, brukes når vi skriver dem ut.
 let pallet = {
   [WALL_BLOCK]: ANSI.COLOR.LIGHT_GRAY,
-  [HERO]: ANSI.COLOR.RED,
+  [HERO]: ANSI.COLOR.GREEN,
   [LOOT]: ANSI.COLOR.YELLOW,
-  [MOBS_BASTARD]: ANSI.COLOR.GREEN,
+  [MOBS_BASTARD]: ANSI.COLOR.RED,
+  [NXT_LVL_DOOR]: ANSI.COLOR.GREEN,
 };
 
 const playerStats = { hp: HP_MAX, cash: 0, attack: 1.1 };
@@ -140,6 +141,14 @@ function update() {
     // Er det en gjenstand der spilleren prøver å gå?
 
     let currentItem = level[tRow][tcol];
+    if (currentItem == NXT_LVL_DOOR) {
+      level = loadLevel(level2);
+      playerPos.row = null;
+      playerPos.col = null;
+      isDirty = true;
+      return;
+    }
+
     if (currentItem == LOOT) {
       if (Math.random() < LOOT_CASH_DROP_RATE) {
         // 95% av tiden gir vi "cash" som loot
@@ -267,6 +276,14 @@ function gameLoop() {
   update();
   draw();
 }
-function print() {
-  console.log;
+
+function loadLevel(rawLevel) {
+  let tempLevel = rawLevel.split("\n");
+  let level = [];
+  for (let i = 0; i < tempLevel.length; i++) {
+    let row = tempLevel[i];
+    let outputRow = row.split("");
+    level.push(outputRow);
+  }
+  return level;
 }
