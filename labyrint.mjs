@@ -13,12 +13,20 @@ import { level2 } from "./levels.mjs";
 import { splashScreen } from "./splashscreen.mjs";
 import dict from "./dictionary.mjs";
 import { randomBetween } from "./mathUtils";
+import {
+  bastardDeath,
+  MobsDealsDmg,
+  MOBSDeath,
+  playerDealsDmg,
+  playerFoundItem,
+  playerGainsLoot,
+} from "./events";
 const FPS = 250; // 60 frames i sekundet sån sirkus..
 let rawLevel = level1;
 let startPrompt;
 
 console.log(splashScreen);
-await rl.question(dict.gs.start_Prompt);
+await rl.question(dict.gameSettings.start_Prompt);
 
 // Brettet som er lastet inn er i form av tekst, vi må omgjøre teksten til en
 // to dimensjonal liste [][] for å kunne tolke hva som er hvor etc.
@@ -68,7 +76,7 @@ const LOOT_CASH_MAX_AMT = 7;
 const HP_MAX = 10;
 const MAX_ATTACK = 2;
 
-const playerStats = { hp: HP_MAX, chash: 0, attack: 1.1 };
+const playerStats = { hp: HP_MAX, cash: 0, attack: 1.1 };
 
 let eventText = ""; // Dersom noe intreffer så vil denne variabelen kunne brukes til å fortelle spilleren om det
 
@@ -132,13 +140,13 @@ function update() {
       if (Math.random() < LOOT_CASH_DROP_RATE) {
         // 95% av tiden gir vi "cash" som loot
         let loot = randomBetween(LOOT_CASH_MIN_AMT, LOOT_CASH_MAX_AMT);
-        playerStats.chash += loot;
-        eventText = `Player gained ${loot}$`; // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
+        playerStats.cash += loot;
+        eventText = playerGainsLoot(loot); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
       } else {
         // i 5% av tilfellen tildeler vi en tilfeldig gjenstand fra listen over gjenstander.
         let item = POSSIBLE_PICKUPS.random();
         playerStats.attack += item.value;
-        eventText = `Player found a ${item.name}, ${item.attribute} is changed by ${item.value}`; // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
+        eventText = playerFoundItem(item); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
       }
     }
 
@@ -167,17 +175,17 @@ function update() {
     let attack = (Math.random() * MAX_ATTACK * playerStats.attack).toFixed(2);
     antagonist.hp -= attack; // Påfører skaden.
 
-    eventText = `Player dealt ${attack} points of damage`; // Forteller spilleren hvor mye skade som ble påfært
+    eventText = playerDealsDmg(attack); // Forteller spilleren hvor mye skade som ble påfært
 
     if (antagonist.hp <= 0) {
       // Sjekker om motstanderen er død.
-      eventText += " and the bastard died"; // Sier i fra at motstandren er død
+      eventText += MOBSDeath; // Sier i fra at motstandren er død
       level[tRow][tcol] = EMPTY; // Markerer stedet på kartet hvor motstanderen sto som ledig.
     } else {
       // Dersom motstanderen ikke er død, så slår vedkommene tilbake.
       attack = (Math.random() * MAX_ATTACK * antagonist.attack).toFixed(2);
       playerStats.hp -= attack;
-      eventText += `\nBastard deals ${attack} back`;
+      eventText += \n MobsDealsDmg;
     }
 
     // Setter temp pos tilbake siden dette har vært en kamp runde
@@ -237,7 +245,7 @@ function renderHUD() {
   let hpBar = `[${
     ANSI.COLOR.RED + pad(Math.round(playerStats.hp), "❤️") + ANSI.COLOR_RESET
   }${ANSI.COLOR.BLUE + pad(HP_MAX - playerStats.hp, "❤️") + ANSI.COLOR_RESET}]`;
-  let cash = `$:${playerStats.chash}`;
+  let cash = `$:${playerStats.cash}`;
   return `${hpBar} ${cash} \n`;
 }
 

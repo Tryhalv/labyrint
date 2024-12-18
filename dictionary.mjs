@@ -1,8 +1,8 @@
 const dict = {
-  gs: {
+  gameSettings: {
     start_Prompt: "Press enter to start",
-    bad_Things: "b",
-  },
+      },
+eventLogs: 
 };
 
 export default dict;
