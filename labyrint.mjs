@@ -15,8 +15,9 @@ import dict from "./dictionary.mjs";
 const FPS = 250; // 60 frames i sekundet sån sirkus..
 let rawLevel = level1;
 let startPrompt;
+
 console.log(splashScreen);
-await rl.question(startPrompt);
+await rl.question(dict.gs.start_Prompt);
 
 // Brettet som er lastet inn er i form av tekst, vi må omgjøre teksten til en
 // to dimensjonal liste [][] for å kunne tolke hva som er hvor etc.
@@ -55,6 +56,9 @@ const POSSIBLE_PICKUPS = [
   { name: "Spear", attribute: "attack", value: 3 },
 ];
 
+const E_HP_INIT_MULTIPLIER = 6;
+const E_HP_INIT_MIN = 4;
+
 const HP_MAX = 10;
 const MAX_ATTACK = 2;
 
@@ -83,7 +87,8 @@ function update() {
         } else if (BAD_THINGS.includes(value)) {
           // Posisjonen inneholder en "fiende" da må vi gi fienden noen stats for senere bruk
 
-          let hp = Math.round(Math.random() * 6) + 4;
+          let hp =
+            Math.round(Math.random() * E_HP_INIT_MULTIPLIER) + E_HP_INIT_MIN;
           let attack = 0.7 + Math.random();
           let badThing = { hp, attack, row, col };
           NPCs.push(badThing);

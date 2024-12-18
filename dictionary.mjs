@@ -1,6 +1,6 @@
 const dict = {
   gs: {
-    start_Prompt: "Press anykey to start",
+    start_Prompt: "Press enter to start",
     bad_Things: "b",
   },
 };
