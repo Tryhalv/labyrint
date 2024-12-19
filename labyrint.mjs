@@ -7,7 +7,7 @@ import KeyBoardManager from "./keyboardManager.mjs";
 import "./prototypes.mjs";
 import { level1 } from "./levels.mjs";
 import { level2 } from "./levels.mjs";
-import { splashScreenIntro, splashScreenGameOver } from "./splashscreens.mjs";
+import { splashScreenIntro } from "./splashscreens.mjs";
 import dict from "./dictionary.mjs";
 import { randomBetween } from "./mathUtils.mjs";
 import {
@@ -24,9 +24,8 @@ const rl = readlinePromises.createInterface({
 const FPS = 250; // 60 frames i sekundet sån sirkus..
 
 let level = loadLevel(level1);
-//console.log(splashScreenIntro);
-console.log(splashScreenGameOver);
-await rl.question(dict.gameSettings.start_Prompt);
+console.log(splashScreenIntro);
+await rl.question(dict.gameSettings.start_Menu_Prompts);
 
 // Brettet som er lastet inn er i form av tekst, vi må omgjøre teksten til en
 // to dimensjonal liste [][] for å kunne tolke hva som er hvor etc.
