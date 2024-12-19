@@ -7,7 +7,7 @@ import KeyBoardManager from "./keyboardManager.mjs";
 import "./prototypes.mjs";
 import { level1 } from "./levels.mjs";
 import { level2 } from "./levels.mjs";
-import { splashScreen } from "./splashscreen.mjs";
+import { splashScreenIntro, splashScreenGameOver } from "./splashscreens.mjs";
 import dict from "./dictionary.mjs";
 import { randomBetween } from "./mathUtils.mjs";
 import {
@@ -24,7 +24,8 @@ const rl = readlinePromises.createInterface({
 const FPS = 250; // 60 frames i sekundet sån sirkus..
 
 let level = loadLevel(level1);
-console.log(splashScreen);
+//console.log(splashScreenIntro);
+console.log(splashScreenGameOver);
 await rl.question(dict.gameSettings.start_Prompt);
 
 // Brettet som er lastet inn er i form av tekst, vi må omgjøre teksten til en
@@ -71,6 +72,7 @@ const LOOT_CASH_MIN_AMT = 3;
 const LOOT_CASH_MAX_AMT = 7;
 const LOOT_CASH_DISPLAY_NAME = "gold";
 const HP_MAX = 10;
+const HP_MIN = 0;
 const MAX_ATTACK = 2;
 
 // Dette er farge palleten for de ulike symbolene, brukes når vi skriver dem ut.
@@ -82,7 +84,7 @@ let pallet = {
   [NXT_LVL_DOOR]: ANSI.COLOR.GREEN,
 };
 
-const playerStats = { hp: HP_MAX, cash: 0, attack: 1.1 };
+const playerStats = { hp: HP_MAX, HP_MIN, cash: 0, attack: 1.1 };
 
 let eventText = ""; // Dersom noe intreffer så vil denne variabelen kunne brukes til å fortelle spilleren om det
 
@@ -201,6 +203,11 @@ function update() {
       // Dersom motstanderen ikke er død, så slår vedkommene tilbake.
       attack = (Math.random() * MAX_ATTACK * antagonist.attack).toFixed(2);
       playerStats.hp -= attack;
+      if (playerStats.hp <= 0) {
+        console.clear;
+        console.log(splashScreenGameOver);
+        process.exit;
+      }
       eventText += mobsDealsDmg(attack);
     }
 

@@ -1,4 +1,4 @@
-const splashScreen = `
+const splashScreenIntro = `
                                             
  _           ____      ____       __ __      ____      ____      ____       ______ 
 | |         /    |    |    \\     |  |  |    |    \\    |    |    |    \\     |      |
@@ -12,4 +12,14 @@ const splashScreen = `
                                                                                                            
 `;
 
-export { splashScreen };
+const splashScreenGameOver = `
+  ________                              ________                             
+ //  _____//  _____      _____     ____   \_____  \   ___  __   ____   _______ 
+//   \  ___  \__  \    //     \  _/ __ \   /   |   \  \  \/ // _// __ \  \_  __ \
+\    \_\  \  / __ \_ |  Y Y  \ \  ___/  /    |    \  \   //  \  ___/   |  | \//
+ \______  // (____  // |__|_|  // \___  > \_______  //   \_//    \___  >  |__|   
+        \//       \//        \//       \//          \//               \//           
+                                                                                  
+ `;
+
+export { splashScreenIntro, splashScreenGameOver };
