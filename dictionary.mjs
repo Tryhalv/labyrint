@@ -1,6 +1,7 @@
 const dict = {
   gameSettings: {
-    start_Menu_Prompts: "Press enter to start\nPress esc to quit game",
+    start_Menu_Prompts:
+      "Welcome to Labyrint\nPress ENTER to start\nPress ESC to quit game",
   },
 };
 
