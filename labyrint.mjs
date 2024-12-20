@@ -16,13 +16,14 @@ import {
   playerDealsDmg,
   playerFindsItem,
   playerGainsLoot,
-  eventText,
+  eventLogs,
   appendEventText,
 } from "./events.mjs";
 const rl = readlinePromises.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
+let frameCount = 0;
 const FPS = 250; // 60 frames i sekundet sån sirkus..
 
 let level = loadLevel(level1);
@@ -159,12 +160,15 @@ function update() {
         );
         playerStats.cash += loot;
 
-        appendEventText(playerGainsLoot(loot, LOOT_CASH_DISPLAY_NAME)); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
+        appendEventText(
+          playerGainsLoot(loot, LOOT_CASH_DISPLAY_NAME),
+          frameCount
+        ); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
       } else {
         // i 5% av tilfellen tildeler vi en tilfeldig gjenstand fra listen over gjenstander.
         let item = POSSIBLE_PICKUPS.random();
         playerStats.attack += item.value;
-        appendEventText(playerFindsItem(item)); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
+        appendEventText(playerFindsItem(item), frameCount); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
       }
     }
 
@@ -193,11 +197,11 @@ function update() {
     let attack = (Math.random() * MAX_ATTACK * playerStats.attack).toFixed(2);
     antagonist.hp -= attack; // Påfører skaden.
 
-    appendEventText(playerDealsDmg(attack)); // Forteller spilleren hvor mye skade som ble påfært
+    appendEventText(playerDealsDmg(attack), frameCount); // Forteller spilleren hvor mye skade som ble påfært
 
     if (antagonist.hp <= 0) {
       // Sjekker om motstanderen er død.
-      appendEventText(bastardDies()); // Sier i fra at motstandren er død
+      appendEventText(bastardDies(), frameCount); // Sier i fra at motstandren er død
       level[tRow][tcol] = EMPTY; // Markerer stedet på kartet hvor motstanderen sto som ledig.
     } else {
       // Dersom motstanderen ikke er død, så slår vedkommene tilbake.
@@ -208,7 +212,7 @@ function update() {
         console.log(splashScreenGameOver);
         process.exit();
       }
-      appendEventText(mobsDealsDmg(attack));
+      appendEventText(mobsDealsDmg(attack), frameCount);
     }
 
     // Setter temp pos tilbake siden dette har vært en kamp runde
@@ -257,9 +261,19 @@ function draw() {
   }
 
   console.log(rendring);
-  if (eventText != "") {
-    // dersom noe er lagt til i eventText så skriver vi det ut nå. Dette blir synelig til neste gang vi tegner (isDirty = true)
-    console.log(eventText);
+  renderEventLog();
+}
+
+function renderEventLog() {
+  if (eventLogs.length > 0) {
+    // dersom noe er lagt til i eventLog så skriver vi det ut nå. Dette blir synelig til neste gang vi tegner (isDirty = true)
+    for (let i = 0; i < eventLogs.length; i++) {
+      const eventLog = eventLogs[i];
+
+      if (frameCount < eventLog.lastDisplayFrame) {
+        console.log(eventLog.displayText);
+      }
+    }
   }
 }
 
@@ -286,6 +300,7 @@ function pad(len, text) {
 }
 
 function gameLoop() {
+  frameCount++;
   update();
   draw();
 }
