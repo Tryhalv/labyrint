@@ -25,7 +25,6 @@ const FPS = 250; // 60 frames i sekundet sån sirkus..
 
 let level = loadLevel(level1);
 console.log(splashScreenIntro);
-console.log(splashScreenGameOver);
 await rl.question(dict.gameSettings.start_Menu_Prompts);
 
 // Brettet som er lastet inn er i form av tekst, vi må omgjøre teksten til en
@@ -84,7 +83,7 @@ let pallet = {
   [NXT_LVL_DOOR]: ANSI.COLOR.GREEN,
 };
 
-const playerStats = { hp: HP_MAX, HP_MIN, cash: 0, attack: 1.1 };
+const playerStats = { hp: HP_MAX, cash: 0, attack: 1.1 };
 
 let eventText = ""; // Dersom noe intreffer så vil denne variabelen kunne brukes til å fortelle spilleren om det
 
@@ -204,9 +203,9 @@ function update() {
       attack = (Math.random() * MAX_ATTACK * antagonist.attack).toFixed(2);
       playerStats.hp -= attack;
       if (playerStats.hp <= 0) {
-        console.clear;
+        console.clear();
         console.log(splashScreenGameOver);
-        process.exit;
+        process.exit();
       }
       eventText += mobsDealsDmg(attack);
     }
