@@ -16,6 +16,8 @@ import {
   playerDealsDmg,
   playerFindsItem,
   playerGainsLoot,
+  eventText,
+  appendEventText,
 } from "./events.mjs";
 const rl = readlinePromises.createInterface({
   input: process.stdin,
@@ -84,8 +86,6 @@ let pallet = {
 };
 
 const playerStats = { hp: HP_MAX, cash: 0, attack: 1.1 };
-
-let eventText = ""; // Dersom noe intreffer så vil denne variabelen kunne brukes til å fortelle spilleren om det
 
 // I dette spillet brukker vi ikke en vanlig loop til å kjøre spill logikken vår.
 // Men setInterval funksjonen virker litt på samme måte som en loop, bare at den venter x antall millisekunder mellom hver gang den utfører koden vår.
@@ -158,12 +158,13 @@ function update() {
           randomBetween(LOOT_CASH_MIN_AMT, LOOT_CASH_MAX_AMT)
         );
         playerStats.cash += loot;
-        eventText = playerGainsLoot(loot, LOOT_CASH_DISPLAY_NAME); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
+
+        appendEventText(playerGainsLoot(loot, LOOT_CASH_DISPLAY_NAME)); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
       } else {
         // i 5% av tilfellen tildeler vi en tilfeldig gjenstand fra listen over gjenstander.
         let item = POSSIBLE_PICKUPS.random();
         playerStats.attack += item.value;
-        eventText = playerFindsItem(item); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
+        appendEventText(playerFindsItem(item)); // Vi bruker eventText til å fortelle spilleren hva som har intruffet.
       }
     }
 
@@ -192,11 +193,11 @@ function update() {
     let attack = (Math.random() * MAX_ATTACK * playerStats.attack).toFixed(2);
     antagonist.hp -= attack; // Påfører skaden.
 
-    eventText = playerDealsDmg(attack); // Forteller spilleren hvor mye skade som ble påfært
+    appendEventText(playerDealsDmg(attack)); // Forteller spilleren hvor mye skade som ble påfært
 
     if (antagonist.hp <= 0) {
       // Sjekker om motstanderen er død.
-      eventText += bastardDies(); // Sier i fra at motstandren er død
+      appendEventText(bastardDies()); // Sier i fra at motstandren er død
       level[tRow][tcol] = EMPTY; // Markerer stedet på kartet hvor motstanderen sto som ledig.
     } else {
       // Dersom motstanderen ikke er død, så slår vedkommene tilbake.
@@ -207,7 +208,7 @@ function update() {
         console.log(splashScreenGameOver);
         process.exit();
       }
-      eventText += mobsDealsDmg(attack);
+      appendEventText(mobsDealsDmg(attack));
     }
 
     // Setter temp pos tilbake siden dette har vært en kamp runde
@@ -259,7 +260,6 @@ function draw() {
   if (eventText != "") {
     // dersom noe er lagt til i eventText så skriver vi det ut nå. Dette blir synelig til neste gang vi tegner (isDirty = true)
     console.log(eventText);
-    eventText = "";
   }
 }
 
